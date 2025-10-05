@@ -26,4 +26,5 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
      * @return Uma lista de produtos que correspondem ao critério.
      */
     List<Produto> findByNomeContainingIgnoreCase(String nome);
+    
 }
