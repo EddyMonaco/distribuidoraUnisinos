@@ -20,7 +20,6 @@ import com.distribuicao.unisinos.service.ProdutosService;
 public class ProdutoController {
 	@Autowired
     private ProdutosService produtosService;
-	private ProdutoCreateDTO produtoCreateDTO;
 	
 	@GetMapping
 	public List<Produto> findAll(){

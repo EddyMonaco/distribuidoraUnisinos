@@ -8,13 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.distribuicao.unisinos.dto.ProdutoCreateDTO;
 import com.distribuicao.unisinos.model.Produto;
+import com.distribuicao.unisinos.model.UsuarioExterno;
 import com.distribuicao.unisinos.repository.ProdutoRepository;
+import com.distribuicao.unisinos.repository.UsuarioExternoRepository;
 
 @Service
 public class ProdutosService {
 
 	@Autowired
     private ProdutoRepository produtoRepository;
+	
+	@Autowired
+    private UsuarioExternoRepository usuarioExternoRepository;
 	
 	public List<Produto> findAll(){
 		return produtoRepository.findAll();
@@ -30,7 +35,19 @@ public class ProdutosService {
 	
 	public Produto createProduto(ProdutoCreateDTO produtoDTO) {
 		Produto produto = new Produto();
-		produto.get
+		produto.setNome(produtoDTO.getNome());
+		produto.setSku(produtoDTO.getSku());
+		produto.setQuantidadeTotal(produtoDTO.getQuantidadeTotal());
+		produto.setPrecoCusto(produtoDTO.getPrecoCusto());
+		produto.setPrecoVenda(produtoDTO.getPrecoVenda());
+		
+		if(produtoDTO.getFornecedorId()!= null) {
+			UsuarioExterno fornecedor = usuarioExternoRepository.findById(produtoDTO.getFornecedorId())
+					.orElseThrow(()-> new RuntimeException("Fornecedor não encontrado"));
+			produto.setFornecedor(fornecedor);	
+		}
+		
+		return produtoRepository.save(produto);
 	}
 }
 
