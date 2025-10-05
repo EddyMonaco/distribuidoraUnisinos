@@ -2,10 +2,8 @@ package com.distribuicao.unisinos.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.distribuicao.unisinos.dto.ProdutoCreateDTO;
 import com.distribuicao.unisinos.model.Produto;
 import com.distribuicao.unisinos.model.UsuarioExterno;
