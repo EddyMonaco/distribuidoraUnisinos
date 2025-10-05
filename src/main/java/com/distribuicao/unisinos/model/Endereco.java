@@ -20,6 +20,9 @@ public class Endereco {
 
     @Column(nullable = false)
     private String rua;
+    
+    @Column(nullable = false)
+    private Integer numero;
 
     @Column(nullable = false)
     private String cidade;
@@ -29,7 +32,4 @@ public class Endereco {
 
     @Column(name = "cep", nullable = false)
     private String cep;
-
-    @Column(nullable = false)
-    private String pais;
 }

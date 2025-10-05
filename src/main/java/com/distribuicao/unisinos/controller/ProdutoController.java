@@ -22,7 +22,7 @@ public class ProdutoController {
     private ProdutosService produtosService;
 	
 	@GetMapping
-	public List<Produto> findAll(){
+	public List<Produto> findAll(){ 
 		return produtosService.findAll();
 	}
 	
