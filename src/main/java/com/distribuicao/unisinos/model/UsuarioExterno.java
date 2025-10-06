@@ -3,6 +3,8 @@ package com.distribuicao.unisinos.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +29,7 @@ public class UsuarioExterno extends Usuario {
     private TipoExterno tipoExterno;
 
     @OneToMany(mappedBy = "usuarioExterno", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Endereco> enderecos = new ArrayList<>();
 
     public enum TipoExterno {

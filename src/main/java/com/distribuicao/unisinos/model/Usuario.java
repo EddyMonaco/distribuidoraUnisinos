@@ -8,6 +8,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "usuarios")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 public abstract class Usuario {

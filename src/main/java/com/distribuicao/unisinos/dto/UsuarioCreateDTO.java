@@ -12,4 +12,5 @@ public class UsuarioCreateDTO {
 	
 	@Schema(description = "Email do usuário", example = "usuario.teste@teste.com")
 	private String email;
+
 }

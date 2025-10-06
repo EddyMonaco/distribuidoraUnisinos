@@ -1,5 +1,6 @@
 package com.distribuicao.unisinos.repository;
 
+import com.distribuicao.unisinos.model.Usuario;
 import com.distribuicao.unisinos.model.UsuarioExterno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ public interface UsuarioExternoRepository extends JpaRepository<UsuarioExterno, 
      * @param cnpjCpf O CNPJ/CPF a ser pesquisado.
      * @return Um Optional contendo o usuário externo, se encontrado.
      */
-    Optional<UsuarioExterno> findByCnpjCpf(String cnpjCpf);
+    Optional<UsuarioExterno> findUsuarioExternoByCnpjCpf(String cnpjCpf);
 
     /**
      * Lista todos os usuários externos de um determinado tipo (CLIENTE ou FORNECEDOR).
@@ -24,5 +25,9 @@ public interface UsuarioExternoRepository extends JpaRepository<UsuarioExterno, 
      * @param tipo O tipo de usuário externo.
      * @return Uma lista de usuários externos.
      */
-    List<UsuarioExterno> findByTipoExterno(UsuarioExterno.TipoExterno tipo);
+    List<UsuarioExterno> findUsuarioExternoByTipoExterno(UsuarioExterno.TipoExterno tipo);
+    
+    List<UsuarioExterno> findByNomeContainingIgnoreCase(String nome);
+    
+    Optional<UsuarioExterno> findUsuarioExternoByEmail(String email);
 }

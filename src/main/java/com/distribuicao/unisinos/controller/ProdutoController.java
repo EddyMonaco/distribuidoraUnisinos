@@ -26,12 +26,12 @@ public class ProdutoController {
 		return produtosService.findAll();
 	}
 	
-	@GetMapping("/{codigo}")
+	@GetMapping("/bySku/{sku}")
 	public Optional<Produto> findBySku(@PathVariable String sku) {
 		return produtosService.findBySku(sku);
 	}
 	
-	@GetMapping("/{nome}")
+	@GetMapping("/byNome/{nome}")
 	public List<Produto> findByNomeContainingIgnoreCase(@PathVariable String nome) {
 		return produtosService.findByNomeContainingIgnoreCase(nome);
 	}
