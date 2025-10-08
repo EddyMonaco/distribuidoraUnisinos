@@ -41,7 +41,7 @@ public class UsuarioService {
 		return usuarioExternoRepository.findByNomeContainingIgnoreCase(nome);
 	}
 	
-	public Optional<UsuarioExterno> findUsuarioExternoByEmail(String email){
+	public UsuarioExterno findUsuarioExternoByEmail(String email){
 		return usuarioExternoRepository.findUsuarioExternoByEmail(email);
 	}
 	

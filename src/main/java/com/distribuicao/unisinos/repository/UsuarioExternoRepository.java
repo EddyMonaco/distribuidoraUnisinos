@@ -1,6 +1,5 @@
 package com.distribuicao.unisinos.repository;
 
-import com.distribuicao.unisinos.model.Usuario;
 import com.distribuicao.unisinos.model.UsuarioExterno;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -29,5 +28,5 @@ public interface UsuarioExternoRepository extends JpaRepository<UsuarioExterno, 
     
     List<UsuarioExterno> findByNomeContainingIgnoreCase(String nome);
     
-    Optional<UsuarioExterno> findUsuarioExternoByEmail(String email);
+    UsuarioExterno findUsuarioExternoByEmail(String email);
 }

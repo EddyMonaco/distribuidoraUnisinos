@@ -53,7 +53,7 @@ public class UsuarioController {
 	        @ApiResponse(responseCode = "404", description = "Usuário externo não encontrado para o e-mail fornecido.")
 	})
 	@GetMapping("/usuario-externo/byEmail/{email}")
-	public Optional<UsuarioExterno> findAllUsuarioExternoByEmail(@PathVariable String email){
+	public UsuarioExterno findAllUsuarioExternoByEmail(@PathVariable String email){
 		return usuarioService.findUsuarioExternoByEmail(email);
 	}
 	
