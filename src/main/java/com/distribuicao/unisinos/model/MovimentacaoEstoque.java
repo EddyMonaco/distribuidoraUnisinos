@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "movimentacoes_estoque")
@@ -36,7 +38,7 @@ public class MovimentacaoEstoque {
     private int quantidade;
 
     @Column(name = "data_movimentacao", updatable = false)
-    private Instant dataMovimentacao = Instant.now();
+    private LocalDateTime dataMovimentacao = LocalDateTime.of(LocalDate.now(), LocalTime.now());
 
     private String observacao;
 

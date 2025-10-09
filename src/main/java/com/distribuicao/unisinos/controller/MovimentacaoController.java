@@ -5,83 +5,124 @@ import com.distribuicao.unisinos.dto.MovimentacaoResponse;
 import com.distribuicao.unisinos.dto.TransferenciaRequest;
 import com.distribuicao.unisinos.model.MovimentacaoEstoque;
 import com.distribuicao.unisinos.service.MovimentacaoService;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movimentacao")
+@Tag(name = "Movimentação", description = "Endpoints para gerenciamento das movimentações de estoque")
 public class MovimentacaoController {
 
     @Autowired
     private MovimentacaoService movimentacaoService;
-
+    
+	@Operation(summary = "Dar entrar em um produto no estoque", description = "Registra uma entrada de produto no estoque, atualizando a quantidade total e criando um registro de movimentação do tipo ENTRADA.")
+	@ApiResponses(value = { 
+            @ApiResponse(responseCode = "200", description = "Entrada registrada com sucesso."),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao tentar registrar a entrada.")
+    })
     @PostMapping("/entrada")
-    public ResponseEntity<MovimentacaoResponse> entrada(@Valid @RequestBody MovimentacaoRequest req) {
+    public ResponseEntity<MovimentacaoResponse> entrada(@RequestBody MovimentacaoRequest req) {
         MovimentacaoEstoque mov = movimentacaoService.registrarEntrada(
                 req.getProdutoId(), req.getCodigoArea(), req.getUsuarioId(), req.getQuantidade(), req.getObservacao());
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(mov));
     }
-
+	
+	@Operation(summary = "Dar saída em um produto no estoque", description = "Registra uma saída de produto no estoque, atualizando a quantidade total e criando um registro de movimentação do tipo SAÍDA.")
+	@ApiResponses(value = { 
+			@ApiResponse(responseCode = "200", description = "Saída registrada com sucesso."),
+			@ApiResponse(responseCode = "500", description = "Erro interno ao tentar registrar a saída.")
+	})
     @PostMapping("/saida")
-    public ResponseEntity<MovimentacaoResponse> saida(@Valid @RequestBody MovimentacaoRequest req) {
-        MovimentacaoEstoque mov = movimentacaoService.registrarSaida(
-                req.getProdutoId(), req.getCodigoArea(), req.getUsuarioId(), req.getQuantidade(), req.getObservacao());
+    public ResponseEntity<MovimentacaoResponse> saida(@RequestBody MovimentacaoRequest req) {
+        MovimentacaoEstoque mov = movimentacaoService.registrarSaida( req.getProdutoId(), 
+        		req.getCodigoArea(), req.getUsuarioId(), req.getQuantidade(), req.getObservacao());
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(mov));
     }
-
+	
+	@Operation(summary = "Transferir produtos entre áreas de estoque", description = "Registra a transferência de produtos entre duas áreas de estoque, criando dois registros de movimentação: um do tipo SAÍDA na área de origem e outro do tipo ENTRADA na área de destino.")
+	@ApiResponses(value = { 
+			@ApiResponse(responseCode = "200", description = "Transferência registrada com sucesso."),
+			@ApiResponse(responseCode = "500", description = "Erro interno ao tentar registrar a transferência.")
+			})
     @PostMapping("/transferencia")
-    public ResponseEntity<List<MovimentacaoResponse>> transferencia(@Valid @RequestBody TransferenciaRequest req) {
+    public ResponseEntity<List<MovimentacaoResponse>> transferencia(@RequestBody TransferenciaRequest req) {
         List<MovimentacaoEstoque> movs = movimentacaoService.registrarTransferencia(
                 req.getProdutoId(), req.getCodigoAreaOrigem(), req.getCodigoAreaDestino(), req.getUsuarioId(), req.getQuantidade(), req.getObservacao());
-        List<MovimentacaoResponse> resp = movs.stream().map(this::toResponse).collect(Collectors.toList());
+        List<MovimentacaoResponse> resp = movs.stream()
+        								      .map(this::toResponse)
+        								      .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
-
+	
+	@Operation(summary = "Listar movimentações por produto", description = "Retorna uma lista de todas as movimentações de estoque associadas a um produto específico.")
+	@ApiResponses(value = { 
+			@ApiResponse(responseCode = "200", description = "Lista de movimentações encontrada com sucesso."),
+			@ApiResponse(responseCode = "500", description = "Erro interno ao tentar buscar movimentações.")
+	})
     @GetMapping("/produto/{produtoId}")
     public ResponseEntity<List<MovimentacaoResponse>> listarPorProduto(@PathVariable Integer produtoId) {
         List<MovimentacaoEstoque> movs = movimentacaoService.listarPorProduto(produtoId);
-        List<MovimentacaoResponse> resp = movs.stream().map(this::toResponse).collect(Collectors.toList());
+        List<MovimentacaoResponse> resp = movs.stream()
+        									  .map(this::toResponse)
+        									  .collect(Collectors.toList());
         return ResponseEntity.ok(resp);
     }
 
+	@Operation(summary = "Listar movimentações por período", description = "Retorna uma lista de todas as movimentações de estoque que ocorreram dentro de um intervalo de datas especificado.")
+	@ApiResponses(value = { 
+			@ApiResponse(responseCode = "200", description = "Lista de movimentações encontrada com sucesso."),
+			@ApiResponse(responseCode = "400", description = "Formato de data inválido na requisição."), 
+			@ApiResponse(responseCode = "500", description = "Erro interno ao tentar buscar movimentações.")
+			})
     @GetMapping("/periodo")
     public ResponseEntity<?> listarPorPeriodo(@RequestParam String inicio, @RequestParam String fim) {
-        try {
-            Instant i = Instant.parse(inicio);
-            Instant f = Instant.parse(fim);
+		LocalDateTime exp = LocalDateTime.now();
+		try {
+			LocalDateTime i = LocalDateTime.parse(inicio);
+			LocalDateTime f = LocalDateTime.parse(fim);
+			
             List<MovimentacaoEstoque> movs = movimentacaoService.listarPorPeriodo(i, f);
-            List<MovimentacaoResponse> resp = movs.stream().map(this::toResponse).collect(Collectors.toList());
+            List<MovimentacaoResponse> resp = movs.stream()
+            									  .map(this::toResponse)
+            									  .collect(Collectors.toList());
             return ResponseEntity.ok(resp);
+            
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Formato de data inválido. Use ISO-8601, ex: 2023-01-01T00:00:00Z");
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use ISO-8601 = " + exp.toString());
         }
     }
-
+	
+	
     private MovimentacaoResponse toResponse(MovimentacaoEstoque mov) {
-        MovimentacaoResponse r = new MovimentacaoResponse();
-        r.setId(mov.getId());
+		MovimentacaoResponse responseMovimentacao = new MovimentacaoResponse();
+        responseMovimentacao.setId(mov.getId());
         if (mov.getProduto() != null) {
-            r.setProdutoId(mov.getProduto().getId());
-            r.setProdutoNome(mov.getProduto().getNome());
+            responseMovimentacao.setProdutoId(mov.getProduto().getId());
+            responseMovimentacao.setProdutoNome(mov.getProduto().getNome());
         }
         if (mov.getAreaEstoque() != null) {
-            r.setAreaCodigo(mov.getAreaEstoque().getCodigoArea());
+            responseMovimentacao.setAreaCodigo(mov.getAreaEstoque().getCodigoArea());
         }
         if (mov.getUsuario() != null) {
-            r.setUsuarioId(mov.getUsuario().getId());
+            responseMovimentacao.setUsuarioId(mov.getUsuario().getId());
         }
-        r.setTipo(mov.getTipoMovimentacao() != null ? mov.getTipoMovimentacao().name() : null);
-        r.setQuantidade(mov.getQuantidade());
-        r.setDataMovimentacao(mov.getDataMovimentacao());
-        r.setObservacao(mov.getObservacao());
-        return r;
+        responseMovimentacao.setTipo(mov.getTipoMovimentacao() != null ? mov.getTipoMovimentacao().name() : null);
+        responseMovimentacao.setQuantidade(mov.getQuantidade());
+        responseMovimentacao.setDataMovimentacao(mov.getDataMovimentacao());
+        responseMovimentacao.setObservacao(mov.getObservacao());
+        return responseMovimentacao;
     }
 
 }

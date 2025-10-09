@@ -11,11 +11,12 @@ import com.distribuicao.unisinos.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+
 public class MovimentacaoService {
 
     @Autowired
@@ -46,12 +47,9 @@ public class MovimentacaoService {
         AreaEstoque area = areaEstoqueRepository.findByCodigoArea(codigoArea)
                 .orElseThrow(() -> new RuntimeException("Área de estoque não encontrada: " + codigoArea));
 
-        Usuario usuario = null;
-        if (usuarioId != null) {
-            usuario = usuarioRepository.findById(usuarioId)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        }
-
+       Usuario usuario = usuarioRepository.findById(usuarioId)
+    		   .orElseThrow(() -> new RuntimeException("Usuario nao econtrado "));
+    
         // Atualiza quantidade total
         produto.setQuantidadeTotal(produto.getQuantidadeTotal() + quantidade);
         produtoRepository.save(produto);
@@ -141,13 +139,10 @@ public class MovimentacaoService {
             throw new RuntimeException("Estoque insuficiente para transferência. Disponível: " + produto.getQuantidadeTotal());
         }
 
-        Usuario usuario = null;
-        if (usuarioId != null) {
-            usuario = usuarioRepository.findById(usuarioId)
+        Usuario usuario = usuarioRepository.findById(usuarioId)
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        }
+        
 
-        // Cria saída na área de origem (não atualiza quantidade total além do que já existe: para representar movimentação física, trata-se de registros)
         MovimentacaoEstoque saida = new MovimentacaoEstoque();
         saida.setProduto(produto);
         saida.setAreaEstoque(origem);
@@ -193,7 +188,7 @@ public class MovimentacaoService {
     }
 
     @Transactional
-    public List<MovimentacaoEstoque> listarPorPeriodo(Instant inicio, Instant fim) {
+    public List<MovimentacaoEstoque> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         List<MovimentacaoEstoque> movs = movimentacaoRepository.findByDataMovimentacaoBetween(inicio, fim);
         // Initialize lazy associations while in transaction
         movs.forEach(m -> {
