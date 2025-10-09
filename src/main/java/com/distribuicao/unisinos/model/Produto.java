@@ -38,7 +38,7 @@ public class Produto {
     private UsuarioExterno fornecedor;
 
     @Column(name = "quantidade_total", nullable = false)
-    private int quantidadeTotal = 0;
+    private Integer quantidadeTotal = 0;
 
     @Column(name = "preco_custo", nullable = false)
     private BigDecimal precoCusto;

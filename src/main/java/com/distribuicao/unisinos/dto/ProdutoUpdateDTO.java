@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ProdutoCreateDTO {
-	
+public class ProdutoUpdateDTO {
 	@Schema(description = "Nome do produto", example = "Camiseta Polo")
     private String nome;
 
