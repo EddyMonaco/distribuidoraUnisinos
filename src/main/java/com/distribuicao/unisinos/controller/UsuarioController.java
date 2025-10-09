@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,7 @@ import com.distribuicao.unisinos.model.Vendedor;
 import com.distribuicao.unisinos.service.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,7 +64,7 @@ public class UsuarioController {
 	@Operation(summary = "Buscar usuário externo por CNPJ/CPF", description = "Retorna um usuário externo específico com base no seu CNPJ ou CPF.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuário externo encontrado."),
-        @ApiResponse(responseCode = "404", description = "Usuário externo não encontrado.")
+        @ApiResponse(responseCode = "404", description = "Usuário externo não encontrado.", content = @Content)
     })
 	@GetMapping("/usuario-externo/byCnpjCpf/{cnpjCpf}")
 	public Optional<UsuarioExterno> findUsuarioExternoByCnpjCpf(@PathVariable String cnpjCpf){
@@ -134,4 +138,53 @@ public class UsuarioController {
 	public void createUsuarioExterno(@RequestBody UsuarioExternoCreateDTO usuarioDTO) {
 		usuarioService.createUsuarioExterno(usuarioDTO);
 	}
+	
+	@Operation(summary = "Deletar um usuário interno", description = "Deleta um usuário interno (Vendedor ou Supervisor) com base no seu ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Usuário interno deletado com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Usuário interno não encontrado para o ID fornecido.")
+    })
+	
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.noContent().build();
+    }
+	
+	@Operation(summary = "Deletar um usuário externo", description = "Deleta um usuário externo (Cliente ou Fornecedor) com base no seu ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Usuário externo deletado com sucesso.", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Usuário externo não encontrado.", content = @Content)
+    })
+	@DeleteMapping("/usuario-externo/{id}")
+	public ResponseEntity<Void> deleteUsuarioExterno(@PathVariable Integer id) {
+		usuarioService.deleteUsuarioExterno(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@Operation(summary = "Atualizar um usuário interno", description = "Atualiza os dados de um usuário interno (Supervisor ou Vendedor) com base no seu ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário interno atualizado com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Usuário interno não encontrado.", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos.", content = @Content)
+    })
+	@PutMapping("/{id}")
+	public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @RequestBody UsuarioCreateDTO usuarioDTO) {
+		Usuario usuarioAtualizado = usuarioService.updateUsuario(id, usuarioDTO);
+		return ResponseEntity.ok(usuarioAtualizado);
+	}
+	
+	@Operation(summary = "Atualizar um usuário externo", description = "Atualiza os dados de um usuário externo (Cliente ou Fornecedor) com base no seu ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário externo atualizado com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Usuário externo não encontrado.", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos.", content = @Content)
+    })
+	@PutMapping("/usuario-externo/{id}")
+	public ResponseEntity<UsuarioExterno> updateUsuarioExterno(@PathVariable Integer id, @RequestBody UsuarioExternoCreateDTO usuarioDTO) {
+		UsuarioExterno usuarioAtualizado = usuarioService.updateUsuarioExterno(id, usuarioDTO);
+		return ResponseEntity.ok(usuarioAtualizado);
+	}
+
 }
+

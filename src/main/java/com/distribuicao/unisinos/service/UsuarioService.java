@@ -18,6 +18,8 @@ import com.distribuicao.unisinos.repository.UsuarioExternoRepository;
 import com.distribuicao.unisinos.repository.UsuarioRepository;
 import com.distribuicao.unisinos.repository.VendedorRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UsuarioService {
 
@@ -110,5 +112,44 @@ public class UsuarioService {
 		usuario.setAtivo(true);
 		
 		return usuarioRepository.save(usuario);
+	}
+	
+	public Usuario updateUsuario(Integer id, UsuarioCreateDTO usuarioDTO) {
+		Usuario usuarioExistente = usuarioRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID: " + id));
+
+		usuarioExistente.setNome(usuarioDTO.getNome());
+		usuarioExistente.setEmail(usuarioDTO.getEmail());
+		
+		return usuarioRepository.save(usuarioExistente);
+	}
+	
+	public UsuarioExterno updateUsuarioExterno(Integer id, UsuarioExternoCreateDTO usuarioDTO) {
+		UsuarioExterno usuarioExistente = usuarioExternoRepository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Usuário Externo não encontrado com o ID: " + id));
+
+		usuarioExistente.setNome(usuarioDTO.getNome());
+		usuarioExistente.setEmail(usuarioDTO.getEmail());
+		usuarioExistente.setCnpjCpf(usuarioDTO.getCnpjCpf());
+		usuarioExistente.setTipoExterno(usuarioDTO.getTipoExterno());
+
+		return usuarioExternoRepository.save(usuarioExistente);
+	}
+	
+	
+	public void deleteUsuario(Integer id) {
+		
+		if (!usuarioRepository.existsById(id)) {
+			return;
+		}
+		usuarioRepository.deleteById(id);
+	}
+
+	public void deleteUsuarioExterno(Integer id) {
+		
+		if (!usuarioExternoRepository.existsById(id)) {
+			return;
+		}
+		usuarioExternoRepository.deleteById(id);
 	}
 }
