@@ -3,6 +3,7 @@ package com.distribuicao.unisinos.controller;
 import com.distribuicao.unisinos.dto.MovimentacaoRequest;
 import com.distribuicao.unisinos.dto.MovimentacaoResponse;
 import com.distribuicao.unisinos.dto.TransferenciaRequest;
+import com.distribuicao.unisinos.dto.MovimentacaoUpdateRequest;
 import com.distribuicao.unisinos.model.MovimentacaoEstoque;
 import com.distribuicao.unisinos.service.MovimentacaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +30,7 @@ public class MovimentacaoController {
     
 	@Operation(summary = "Dar entrar em um produto no estoque", description = "Registra uma entrada de produto no estoque, atualizando a quantidade total e criando um registro de movimentação do tipo ENTRADA.")
 	@ApiResponses(value = { 
-            @ApiResponse(responseCode = "200", description = "Entrada registrada com sucesso."),
+            @ApiResponse(responseCode = "201", description = "Entrada registrada com sucesso."),
             @ApiResponse(responseCode = "500", description = "Erro interno ao tentar registrar a entrada.")
     })
     @PostMapping("/entrada")
@@ -88,10 +91,10 @@ public class MovimentacaoController {
 			})
     @GetMapping("/periodo")
     public ResponseEntity<?> listarPorPeriodo(@RequestParam String inicio, @RequestParam String fim) {
-		LocalDateTime exp = LocalDateTime.now();
+		Instant exp = Instant.now();
 		try {
-			LocalDateTime i = LocalDateTime.parse(inicio);
-			LocalDateTime f = LocalDateTime.parse(fim);
+			Instant i = Instant.parse(inicio);
+			Instant f = Instant.parse(fim);
 			
             List<MovimentacaoEstoque> movs = movimentacaoService.listarPorPeriodo(i, f);
             List<MovimentacaoResponse> resp = movs.stream()
@@ -104,7 +107,36 @@ public class MovimentacaoController {
         }
     }
 	
-	
+	@Operation(summary = "Deletar uma movimentacao", description = "Deleta uma movimentcao com base no seu ID e se o usuario é supervisor.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Movimentacao deletada com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Usuário interno não encontrado para o ID fornecido.")
+    })	
+    @DeleteMapping("/movimentacao/delete")
+    public ResponseEntity<Void> deleteUsuario(@RequestParam  Integer movimentacaoId, @RequestParam Integer usuaorioId) {
+        movimentacaoService.deleteMovimentacao(movimentacaoId, usuaorioId);
+        return ResponseEntity.noContent().build();
+    }
+
+	@Operation(summary = "Atualizar uma movimentação", description = "Atualiza campos de uma movimentação (quantidade, observação, área e usuário). Ajustes na quantidade atualizam o estoque conforme o tipo da movimentação.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Movimentação atualizada com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida."),
+            @ApiResponse(responseCode = "404", description = "Movimentação ou recurso não encontrado."),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao tentar atualizar a movimentação.")
+    })
+    @PutMapping("/update")
+    public ResponseEntity<MovimentacaoResponse> update(@RequestParam Integer movimentacaoId, @RequestBody MovimentacaoUpdateRequest req) {
+        MovimentacaoEstoque mov = movimentacaoService.atualizarMovimentacao(
+                movimentacaoId,
+                req.getUsuarioId(),
+                req.getQuantidade(),
+                req.getObservacao(),
+                req.getCodigoArea()
+        );
+        return ResponseEntity.ok(toResponse(mov));
+    }
+
     private MovimentacaoResponse toResponse(MovimentacaoEstoque mov) {
 		MovimentacaoResponse responseMovimentacao = new MovimentacaoResponse();
         responseMovimentacao.setId(mov.getId());

@@ -3,14 +3,18 @@ package com.distribuicao.unisinos.service;
 import com.distribuicao.unisinos.model.AreaEstoque;
 import com.distribuicao.unisinos.model.MovimentacaoEstoque;
 import com.distribuicao.unisinos.model.Produto;
+import com.distribuicao.unisinos.model.Supervisor;
 import com.distribuicao.unisinos.model.Usuario;
 import com.distribuicao.unisinos.repository.AreaEstoqueRepository;
 import com.distribuicao.unisinos.repository.MovimentacaoRepository;
 import com.distribuicao.unisinos.repository.ProdutoRepository;
+import com.distribuicao.unisinos.repository.SupervisorRepository;
 import com.distribuicao.unisinos.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,9 @@ public class MovimentacaoService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private SupervisorRepository supervisorRepository;
 
     /**
      * Registra uma entrada de produto no estoque: atualiza a quantidade total e
@@ -134,7 +141,6 @@ public class MovimentacaoService {
         AreaEstoque destino = areaEstoqueRepository.findByCodigoArea(codigoAreaDestino)
                 .orElseThrow(() -> new RuntimeException("Área de estoque (destino) não encontrada: " + codigoAreaDestino));
 
-        // Não é possível validar estoque por área sem modelo específico, apenas verifica estoque global
         if (produto.getQuantidadeTotal() < quantidade) {
             throw new RuntimeException("Estoque insuficiente para transferência. Disponível: " + produto.getQuantidadeTotal());
         }
@@ -171,9 +177,8 @@ public class MovimentacaoService {
     @Transactional
     public List<MovimentacaoEstoque> listarPorProduto(Integer produtoId) {
         List<MovimentacaoEstoque> movs = movimentacaoRepository.findByProdutoId(produtoId);
-        // Initialize lazy associations while in transaction
-        movs.forEach(m -> {
-            if (m.getProduto() != null) {
+        for(MovimentacaoEstoque m : movs) {
+        	if (m.getProduto() != null) {
                 m.getProduto().getId();
                 m.getProduto().getNome();
             }
@@ -183,12 +188,13 @@ public class MovimentacaoService {
             if (m.getUsuario() != null) {
                 m.getUsuario().getId();
             }
-        });
+		}
+
         return movs;
     }
 
     @Transactional
-    public List<MovimentacaoEstoque> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+    public List<MovimentacaoEstoque> listarPorPeriodo(Instant inicio,Instant fim) {
         List<MovimentacaoEstoque> movs = movimentacaoRepository.findByDataMovimentacaoBetween(inicio, fim);
         // Initialize lazy associations while in transaction
         movs.forEach(m -> {
@@ -205,5 +211,69 @@ public class MovimentacaoService {
         });
         return movs;
     }
+    
+    @Transactional
+	public void deleteMovimentacao(Integer movimentacaoId, Integer usuarioId) {
+		MovimentacaoEstoque mov = movimentacaoRepository.findById(movimentacaoId)
+				.orElseThrow(() -> new RuntimeException("Movimentação não encontrada para o ID: " + movimentacaoId));
+		
+		Supervisor usuario = supervisorRepository.findById(usuarioId)
+				.orElseThrow(() -> new RuntimeException("Supervisor não encontrado: " + usuarioId));
+		
+		if (!usuario.isAtivo()) {
+			throw new RuntimeException("Usuário não é supervisor ou está inativo.");
+		}
+		movimentacaoRepository.delete(mov);
+	}
 
+    @Transactional
+    public MovimentacaoEstoque atualizarMovimentacao(Integer movimentacaoId, Integer usuarioId, Integer novaQuantidade, String novaObservacao, String novoCodigoArea) {
+        MovimentacaoEstoque mov = movimentacaoRepository.findById(movimentacaoId)
+                .orElseThrow(() -> new RuntimeException("Movimentação não encontrada para o ID: " + movimentacaoId));
+
+        if (novaQuantidade != null && novaQuantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero");
+        }
+
+        Produto produto = mov.getProduto();
+        if (produto == null) {
+            throw new RuntimeException("Movimentação sem produto associado");
+        }
+
+        if (novaQuantidade != null && novaQuantidade.intValue() != mov.getQuantidade()) {
+            int antiga = mov.getQuantidade();
+            int nova = novaQuantidade.intValue();
+            int delta = nova - antiga; 
+            if (mov.getTipoMovimentacao() == MovimentacaoEstoque.TipoMovimentacao.ENTRADA) {
+                produto.setQuantidadeTotal(produto.getQuantidadeTotal() + delta);
+            } else if (mov.getTipoMovimentacao() == MovimentacaoEstoque.TipoMovimentacao.SAIDA) {
+                produto.setQuantidadeTotal(produto.getQuantidadeTotal() - delta);
+            }
+
+            if (produto.getQuantidadeTotal() < 0) {
+                throw new RuntimeException("Operação inválida: quantidade total do produto ficaria negativa. Disponível: " + produto.getQuantidadeTotal());
+            }
+            produtoRepository.save(produto);
+
+            mov.setQuantidade(nova);
+        }
+        
+        if (novoCodigoArea != null) {
+            AreaEstoque area = areaEstoqueRepository.findByCodigoArea(novoCodigoArea)
+                    .orElseThrow(() -> new RuntimeException("Área de estoque não encontrada: " + novoCodigoArea));
+            mov.setAreaEstoque(area);
+        }
+
+        if (usuarioId != null) {
+            Usuario usuario = usuarioRepository.findById(usuarioId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            mov.setUsuario(usuario);
+        }
+
+        if (novaObservacao != null) {
+            mov.setObservacao(novaObservacao);
+        }
+
+        return movimentacaoRepository.save(mov);
+    }
 }

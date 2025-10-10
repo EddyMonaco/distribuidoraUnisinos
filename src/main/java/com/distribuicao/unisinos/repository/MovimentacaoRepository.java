@@ -3,7 +3,7 @@ package com.distribuicao.unisinos.repository;
 import com.distribuicao.unisinos.model.MovimentacaoEstoque;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -24,6 +24,6 @@ public interface MovimentacaoRepository extends JpaRepository<MovimentacaoEstoqu
      * @param fim A data/hora de fim do período.
      * @return Uma lista de movimentações.
      */
-    List<MovimentacaoEstoque> findByDataMovimentacaoBetween(LocalDateTime inicio, LocalDateTime fim);
+    List<MovimentacaoEstoque> findByDataMovimentacaoBetween(Instant inicio, Instant fim);
 
 }

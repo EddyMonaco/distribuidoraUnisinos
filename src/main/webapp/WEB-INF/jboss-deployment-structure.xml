@@ -1,0 +1,5 @@
+<jboss-deployment-structure>
+  <deployment>
+    <!-- Do not exclude org.slf4j — allow WildFly to provide the SLF4J binding -->
+  </deployment>
+</jboss-deployment-structure>

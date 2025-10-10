@@ -1,6 +1,6 @@
 package com.distribuicao.unisinos.dto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +15,7 @@ public class MovimentacaoResponse {
     private Integer usuarioId;
     private String tipo;
     private int quantidade;
-    private LocalDateTime dataMovimentacao;
+    private Instant dataMovimentacao;
     private String observacao;    
      
 }
