@@ -1,8 +1,19 @@
+
+# MEU CARO GILBERT APROVEITE A JORNADA DA DOCUMENTAÇÃO, POR AQUI VOCÊ ENTENDERÁ TODOS OS CONCEITOS NECESSÁRIOS PARA ENTENDER ESSE TRABALHO
+
+
+![shyliliy](https://github.com/user-attachments/assets/49ce5b81-a11c-4504-83d4-47daa01101b0)
+
+
 # Sistema de Controle de Estoque
 
-Este projeto é um sistema de backend para controle de estoque, desenvolvido com Java e Spring Boot. A API RESTful permite gerenciar produtos, usuários (internos e externos), áreas de armazenamento e o histórico completo de movimentações de estoque, como entradas, saídas e transferências.
+Este projeto é um sistema de backend para controle de estoque, a idéia era conseguir gerar o controle de um Galpão Logistico onde se dão entrada e saída de produtos, a aplicação foi desenvolvido com Java e Spring Boot. A API RESTful permite gerenciar produtos, usuários (internos e externos), áreas de armazenamento e o histórico completo de movimentações de estoque, como entradas, saídas e transferências.É interessante ressaltar que a parte de segurança não foi aplicada nesse trabalho.
+
+<img width="662" height="654" alt="image" src="https://github.com/user-attachments/assets/0f75a0e9-b616-4a68-bd72-e94d6d3f21ee" />
+
 
 # ✨ Funcionalidades Principais
+
 Gestão de Produtos:
 - Cadastro, consulta, atualização e exclusão de produtos.
   
@@ -16,6 +27,7 @@ Movimentação de Estoque:
  - Registro de transferências de produtos entre diferentes áreas do armazém.
  - Rastreabilidade: Histórico completo de todas as movimentações por produto ou por período.
  - Gestão de Armazém: Cadastro de diferentes áreas de estoque.
+ - Atualização de movimentação.
    
 # 🛠️ Tecnologias Utilizadas
 Backend:
@@ -23,7 +35,8 @@ Backend:
  - Spring Boot 3+
  - Spring Web: Para a criação da API REST.
  - Spring Data JPA: Para a persistência de dados.
- - WildFly27+: Implementação da JPA.
+ - Hibernate: Implementação da JPA.
+ - WildFly27+
 Banco de Dados:
  - PostgreSQL: Banco de dados relacional.
 Documentação da API:
@@ -37,46 +50,70 @@ O projeto segue uma arquitetura em camadas (Layered Architecture) para garantir 
  - Model (Entities): Representa as entidades do banco de dados através de classes Java anotadas com JPA.
  - DTO (Data Transfer Object): Objetos que carregam dados entre as camadas, especialmente entre o Controller e o cliente, garantindo que o modelo de domínio não seja exposto diretamente.
    
-   <img width="636" height="1850" alt="Diagrama de arquitetura-2025-10-09-233505" src="https://github.com/user-attachments/assets/5d27f3b9-250e-4771-9bdd-43c7bdaf6087" />
+<img width="636" height="1850" alt="Diagrama de arquitetura-2025-10-10-200157" src="https://github.com/user-attachments/assets/16508ce5-8122-4dc4-ade3-d9fa52035280" />
 
-[Link da arquittura]([url](https://www.mermaidchart.com/app/projects/3aed8884-4002-479b-952b-e55e7f245475/diagrams/8f5079ac-ffc7-45ed-9abd-f291c5b37821/share/invite/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudElEIjoiOGY1MDc5YWMtZmZjNy00NWVkLTlhYmQtZjI5MWM1YjM3ODIxIiwiYWNjZXNzIjoiVmlldyIsImlhdCI6MTc2MDA1MjkxNH0.dBhGwqapTv2cemFvs65JasH-dNfna4YhJJPZPkhvsBk))
+#  Diagrama de classe
+
+<img width="3495" height="1701" alt="image" src="https://github.com/user-attachments/assets/b6b5f6ef-bbfe-4f08-aada-51fa9901944c" />
+
 
 # 🚀 Como Executar o Projeto
-Pré-requisitos
-JDK 21 ou superior.
-Maven 3.8 ou superior.
-PostgreSQL instalado e em execução. (JDBC instalado e importado dentro do projeto)
+Pré-requisitos:
+ - JDK 21 ou superior.
+ - Maven 3.8 ou superior.
+ - PostgreSQL instalado e em execução. (JDBC instalado e importado dentro do projeto)
+ - Jboss tools para gerenciamento do wildFly27+
+ - Pacote do wildFly27+
+ - Jdbc do postGree instalado no path build do projeto
 
-1. Clone o Repositório
-Bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
-2. Configure o Banco de Dados
-Crie um banco de dados no PostgreSQL para o projeto.
-SQL
-CREATE DATABASE estoque_db;
-Abra o arquivo src/main/resources/application.properties.
-Configure as propriedades de conexão com o seu banco de dados:
-properties
+ - 1. <b>Clone o Repositório</b>
 
-# Configuração do PostgreSQL
-spring.datasource.url=jdbc:postgresql://localhost:5432/estoque_db
-spring.datasource.username=seu_usuario_postgres
-spring.datasource.password=sua_senha_postgres
+  -- git clone https://github.com/seu-usuario/seu-repositorio.git
 
-# Configuração do WildFly
-Precisa baixar o arquivo
-Precisa instalar o Jboss
-Não é necessario mas ajuda criar um web-info para especificar algumas configurações de servidor 
+ - 2. <b>Configure o Banco de Dados</b>
+
+    Crie um banco de dados no PostgreSQL para o projeto.
+    Abra o arquivo src/main/resources/application.properties.
+    Configure as propriedades de conexão com o seu banco de dados:
+    properties
+    
+    # Configuração do PostgreSQL
+    app.version=@project.version@
+    spring.application.name=unisinos
+    spring.datasource.url=jdbc\:postgresql\://localhost\:5432/nome-do-banco
+    spring.datasource.username=seu_usuario
+    spring.datasource.password=sua_senha
+    spring.datasource.driver-class-name=org.postgresql.Driver
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+    
+    # Configuração do WildFly
+     - Suba a janela servidores em uma nova janela windown no eclipse.
+    <img width="1139" height="583" alt="image" src="https://github.com/user-attachments/assets/97aea9ef-d30e-44e7-a41e-90b04681a3ce" />
+    
+    <img width="439" height="636" alt="image" src="https://github.com/user-attachments/assets/7c48c31a-2b65-4225-99fd-2fae2a85040c" />
+    
+    Aqui você vai especificar o server que está dentro do pacote do jboss. Importante ressaltar que o pacote baixado do WildFly27+ precisa ser referenciado. Olhar no youtube caso se perder aqui.
+    
+     - Nesse ponto não é essencial mas está no projeto um pacote dentro de src->main->webapp->WEB-INF->jboss-deployment-structure.xml que ajuda o spring a reconhecer o wildfly.
 
 3. Execute a Aplicação
 A aplicação estará disponível em http://localhost:8080.
-
-4. Popule o Banco com Dados de Teste (Opcional )
+- Nesse momento é recomendado:
+  - Dar um project->run as -> maven_clean.
+  - Dar um project->run as -> maven_install.
+  - Project Maven Update.
+  - Começar o server com o botão direito e modo debug.
+    
+5. Popule o Banco com Dados de Teste (Opcional )
 Para facilitar os testes, você pode executar o script SQL de massa de dados.
 Execute-o diretamente no seu banco de dados estoque_db usando uma ferramenta como DBeaver ou pgAdmin.
 
 📄 Documentação da API (Swagger)
 Com a aplicação em execução, você pode acessar a documentação interativa da API via Swagger UI no seguinte endereço:
-URL da Documentação: http://localhost:8080/swagger-ui.html
+URL da Documentação: [http://localhost:8080/swagger-ui.html](http://localhost:8080/distribuicaounisinos/swagger-ui/index.html)
 Lá, você poderá ver todos os endpoints disponíveis, seus parâmetros, e até mesmo testá-los diretamente pelo navegador.
+
+
+![11](https://github.com/user-attachments/assets/1fda9634-f553-4ede-abe6-3e88d9c201e2)
+
