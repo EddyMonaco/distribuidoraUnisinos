@@ -54,7 +54,8 @@ O projeto segue uma arquitetura em camadas (Layered Architecture) para garantir 
 
 #  Diagrama de classe
 
-<img width="3495" height="1701" alt="image" src="https://github.com/user-attachments/assets/b6b5f6ef-bbfe-4f08-aada-51fa9901944c" />
+<img width="1771" height="2832" alt="image" src="https://github.com/user-attachments/assets/b6ce2ad8-0ea9-4d93-a2ef-198bebeb4907" />
+
 
 
 # 🚀 Como Executar o Projeto
