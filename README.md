@@ -117,5 +117,9 @@ URL da Documentação: [http://localhost:8080/swagger-ui.html](http://localhost:
 Lá, você poderá ver todos os endpoints disponíveis, seus parâmetros, e até mesmo testá-los diretamente pelo navegador.
 
 
+- Apresentação: https://asavbrm-my.sharepoint.com/:p:/g/personal/luizdias_edu_unisinos_br/ESpIYN2tN-RCkZtO9klb9O4BzzaPKongvUJIZFJm81Z3BQ?e=7Y4HYn
+- Video da apresentação: https://www.youtube.com/watch?v=7BlkP8GpzTU
+
+
 ![11](https://github.com/user-attachments/assets/1fda9634-f553-4ede-abe6-3e88d9c201e2)
 
