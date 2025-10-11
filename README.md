@@ -50,7 +50,7 @@ O projeto segue uma arquitetura em camadas (Layered Architecture) para garantir 
  - Model (Entities): Representa as entidades do banco de dados através de classes Java anotadas com JPA.
  - DTO (Data Transfer Object): Objetos que carregam dados entre as camadas, especialmente entre o Controller e o cliente, garantindo que o modelo de domínio não seja exposto diretamente.
    
-<img width="636" height="1000" alt="image" src="https://github.com/user-attachments/assets/8869f419-85b8-4607-87ea-53ed399e162c" />
+<img width="636" height="1500" alt="image" src="https://github.com/user-attachments/assets/8869f419-85b8-4607-87ea-53ed399e162c" />
 
 
 #  Diagrama de classe
